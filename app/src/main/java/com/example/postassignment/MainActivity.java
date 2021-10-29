@@ -16,9 +16,12 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.postassignment.databinding.ActivityMainBinding;
+
+import java.io.ByteArrayOutputStream;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -32,12 +35,23 @@ public class MainActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         binding.addImage.setOnClickListener(v -> getPhoto());
+        binding.saveButton.setOnClickListener(v -> postResult());
 
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             requestPermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE);
         }
 
+    }
+
+    private void postResult() {
+        Intent intent = new Intent(this, PostResult.class);
+        String name = binding.editName.getText().toString();
+        String post = binding.editText.getText().toString();
+
+        intent.putExtra("NAME_INPUT", name);
+        intent.putExtra("POST_INPUT", post);
+        startActivity(intent);
     }
 
     private ActivityResultLauncher<String> requestPermissionLauncher =
@@ -67,6 +81,10 @@ public class MainActivity extends AppCompatActivity {
                             Uri selectedImage = data.getData();
                             Bitmap bitmap = loadBitmap(selectedImage);
                             binding.addedImage.setImageBitmap(bitmap);
+
+                            Intent intent = new Intent(this, PostResult.class);
+//                            String uri_Str = selectedImage.toString();
+                            intent.putExtra("IMAGE", selectedImage);
                         }
                     });
 
